@@ -2,13 +2,12 @@ import { Button, HStack, Input } from '@chakra-ui/react'
 import { Field, Form, Formik } from 'formik'
 import PropTypes from 'prop-types'
 import * as Yup from 'yup'
-import socket from '../../socket'
 import { useContext } from 'react'
-import { MessagesContext } from './Home'
+import { MessagesContext, SocketContext } from './Home'
 
 const ChatBox = ({ userid }) => {
     const { setMessages } = useContext(MessagesContext)
-
+    const { socket } = useContext(SocketContext)
     const handleSubmit = async (values, action) => {
         const message = {
             to: userid,

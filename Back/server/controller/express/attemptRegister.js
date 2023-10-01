@@ -23,11 +23,25 @@ const attemptRegister = async (req, res) => {
             [username, hashedpass, uuidv4()]
         )
 
-        req.session.user = {
-            id: newUserQuery.rows[0].id,
-            username: newUserQuery.rows[0].username,
-            userid: newUserQuery.rows[0].userid,
-        }
+        jwtSign(
+            {
+                id: newUserQuery.rows[0].id,
+                username: newUserQuery.rows[0].username,
+                userid: newUserQuery.rows[0].userid,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '1min' }
+        )
+            .then((token) => {
+                res.json({ loggedIn: true, token })
+            })
+            .catch((err) => {
+                console.log(err)
+                res.json({
+                    loggedIn: false,
+                    status: 'Try Again Later ',
+                })
+            })
 
         res.status(201).json({ loggedIn: true, username })
     } catch (error) {

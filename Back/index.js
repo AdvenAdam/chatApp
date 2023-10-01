@@ -1,9 +1,5 @@
 const express = require('express')
-const {
-    sessionMiddleware,
-    wrap,
-    corsConfig,
-} = require('./server/controller/serverController')
+const { corsConfig } = require('./server/controller/serverController')
 const { Server } = require('socket.io')
 const app = express()
 const helmet = require('helmet')
@@ -28,15 +24,14 @@ const io = new Server(server, {
 app.use(helmet())
 app.use(cors(corsConfig))
 app.use(express.json())
-app.use(sessionMiddleware)
 
 // Routes
 app.use('/auth', authRouter)
 
-io.use(wrap(sessionMiddleware))
 io.use(authorizeUser)
 io.on('connect', (socket) => {
     // Handle socket connections here
+    console.log(socket)
     initializeUser(socket)
     socket.on('add_friend', (friendName, cb) => {
         addFriend(socket, friendName, cb)

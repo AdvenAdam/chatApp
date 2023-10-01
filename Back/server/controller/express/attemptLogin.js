@@ -1,5 +1,9 @@
 const pool = require('../../../db')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const { jwtSign } = require('../jwt/jwtAuth')
+const { json } = require('express')
+require('dotenv').config()
 
 const attemptLogin = async (req, res) => {
     const { username, password } = req.body
@@ -17,13 +21,25 @@ const attemptLogin = async (req, res) => {
             )
             // * set session here
             if (isSamePass) {
-                req.session.user = {
-                    username,
-                    id: user.rows[0].id,
-                    userid: user.rows[0].userid,
-                }
-
-                res.json({ loggedIn: true, username })
+                jwtSign(
+                    {
+                        username,
+                        id: user.rows[0].id,
+                        userid: user.rows[0].userid,
+                    },
+                    process.env.JWT_SECRET,
+                    { expiresIn: '1min' }
+                )
+                    .then((token) => {
+                        res.json({ loggedIn: true, token })
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                        res.json({
+                            loggedIn: false,
+                            status: 'Try Again Later ',
+                        })
+                    })
             } else {
                 res.json({
                     loggedIn: false,

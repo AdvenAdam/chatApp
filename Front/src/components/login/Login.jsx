@@ -10,6 +10,8 @@ const Login = () => {
     const { setUser } = useContext(AccountContext)
     const [error, setError] = useState(null)
     const navigate = useNavigate()
+    const serverUrl = import.meta.env.VITE_REACT_APP_SERVER_URL
+
     return (
         <Formik
             initialValues={{ username: '', password: '' }}
@@ -17,7 +19,7 @@ const Login = () => {
             onSubmit={(values, action) => {
                 const vals = { ...values }
                 action.resetForm()
-                fetch('http://localhost:4000/auth/login', {
+                fetch(`${serverUrl}/auth/login`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
@@ -36,6 +38,7 @@ const Login = () => {
                     .then((data) => {
                         if (data) {
                             setUser({ ...data })
+                            localStorage.setItem('token', data.token)
                             if (data.status) {
                                 setError(data.status)
                             } else if (data.loggedIn) {

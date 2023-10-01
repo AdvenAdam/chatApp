@@ -14,9 +14,8 @@ import {
 import TextField from '../TextField'
 import { Form, Formik } from 'formik'
 import { AddFriendSchema } from '../lib/ValidationRule'
-import socket from '../../socket'
 import { useCallback, useContext, useState } from 'react'
-import { FriendContext } from './Home'
+import { FriendContext, SocketContext } from './Home'
 
 const AddFriendModal = ({ isOpen, onClose }) => {
     const [error, setError] = useState('')
@@ -25,6 +24,7 @@ const AddFriendModal = ({ isOpen, onClose }) => {
         onClose()
     }, [onClose])
     const { setFriendList } = useContext(FriendContext)
+    const { socket } = useContext(SocketContext)
     return (
         <Modal isOpen={isOpen} onClose={closeModal} isCentered>
             <ModalOverlay />
